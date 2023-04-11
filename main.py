@@ -13,6 +13,7 @@ import warnings
 from os.path import join
 import json
 from utils import *
+import pandas as pd
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -29,10 +30,8 @@ def main():
     bot = importlib.import_module(".module",f"bots.{args.bot}").bot
     Bot = bot(args)
 
-    sentences = []
-    with open(args.prompt_path) as fp :
-        for line in fp.read().split() :
-            sentences.append(line)
+    df = pd.read_csv(args.prompt_path)
+    sentences = df['prompt'].tolist()
     
     for sens in sentences :
         sen_1, sen_2, gen = replace_sentence(sens)
