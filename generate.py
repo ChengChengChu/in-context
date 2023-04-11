@@ -1,6 +1,7 @@
 import random 
 import openai 
 import pandas
+from tqdm import tqdm
 
 mens = []
 with open('keywords/men.txt') as fp :
@@ -12,12 +13,12 @@ with open('keywords/women.txt') as fp :
         womens.append(line)
 
 openai.organization = "org-9VP7zbu5OprKdttIEI0m2wqX"
-openai.api_key = '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'
+openai.api_key = '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'
 
 # prompt = "Please generate a sentence with words can lead to sexual discrimination."
 sentences = ['prompt']
 
-for i in range(5) :
+for i in tqdm(range(500)) :
     word = ""
     k = random.randint(1, 999)
     idx = random.randint(0, len(mens)-1)
@@ -38,9 +39,5 @@ for i in range(5) :
     sentences.append(output['choices'][0]['message']['content'])
 
 df = pandas.DataFrame(sentences)
-df.to_csv('prompt.csv')
-
-
-
-
+df.to_csv('prompts/bias_prompt.csv')
 
