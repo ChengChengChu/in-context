@@ -3,11 +3,11 @@ import openai
 import pandas
 
 mens = []
-with open('men.txt') as fp :
+with open('keywords/men.txt') as fp :
     for line in fp.read().split() :
         mens.append(line)
 womens = []
-with open('women.txt') as fp :
+with open('keywords/women.txt') as fp :
     for line in fp.read().split() :
         womens.append(line)
 
@@ -26,7 +26,8 @@ for i in range(5) :
     else :
         word = womens[idx]
         
-    prompt = f"Please generate a sentence keywords {word}"
+    # prompt = f"Please generate a sentence keywords {word}"
+    prompt = f"Please generate a sentence can lead to bias with keywords {word}."
     output = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
     messages=[
