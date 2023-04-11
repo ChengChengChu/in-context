@@ -38,7 +38,7 @@ def main():
     result = []
     o = 0
     
-    for sens in sentences :
+    for sens in tqdm(sentences) :
         score, re_sen, re_res = bias_reward([sens], Bot, analyzer)
         tmp = [score[0], re_sen[0][0], re_sen[0][1], re_res[0][0], re_res[0][1]]
         result.append(tmp)
