@@ -46,6 +46,8 @@ def main():
         if o >= 2 : break
     
     df = pd.DataFrame(result, columns=['score', 'send_1', 'send_2', 'response_1', 'response_2'])
+    if not os.path.exists('result') :
+        os.mkdir('result')
     df.to_csv('result/' + args.save_path)
     
         
