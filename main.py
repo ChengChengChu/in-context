@@ -30,7 +30,7 @@ def main():
     Bot = bot(args)
 
     sentences = []
-    with open(args.pompt_path) as fp :
+    with open(args.prompt_path) as fp :
         for line in fp.read().split() :
             sentences.append(line)
     
