@@ -49,7 +49,7 @@ def set_arguments(parser):
     parser.add_argument("--bot", type=str, default="example")
     parser.add_argument("--exp_name", type=str, default="")
     parser.add_argument("--save_path", type=str, default="") # save path
-    
+    parser.add_argument("--seed", type=int, default=100)
     parser.add_argument('--top_k', type=int, default=50)
     parser.add_argument('--top_p', type=float, default=.9)
     
