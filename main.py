@@ -14,6 +14,7 @@ from os.path import join
 import json
 from utils import *
 import pandas as pd
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -30,15 +31,17 @@ def main():
     bot = importlib.import_module(".module",f"bots.{args.bot}").bot
     Bot = bot(args)
 
+    analyzer = SentimentIntensityAnalyzer()
+
     df = pd.read_csv(args.prompt_path)
     sentences = df['prompt'].tolist()
     
     for sens in sentences :
-        sen_1, sen_2, gen = replace_sentence(sens)
-
-        print(sen_1, sen_2, gen)
+        score, re_sen, re_res = bias_reward([sens], Bot, analyzer)
         import pdb
         pdb.set_trace()
+        
+
     
     
    
