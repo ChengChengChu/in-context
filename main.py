@@ -43,7 +43,7 @@ def main():
         tmp = [score[0], re_sen[0][0], re_sen[0][1], re_res[0][0], re_res[0][1]]
         result.append(tmp)
         o += 1
-        if o >= 20 : break
+        if o >= 2 : break
     
     df = pd.DataFrame(result, columns=['score', 'send_1', 'send_2', 'response_1', 'response_2'])
     df.to_csv('result/' + args.save_path)
