@@ -36,14 +36,11 @@ def main():
     df = pd.read_csv(args.prompt_path)
     sentences = df['prompt'].tolist()
     result = []
-    o = 0
     
     for sens in tqdm(sentences) :
         score, re_sen, re_res = bias_reward([sens], Bot, analyzer)
         tmp = [score[0], re_sen[0][0], re_sen[0][1], re_res[0][0], re_res[0][1]]
         result.append(tmp)
-        o += 1
-        if o >= 2 : break
     
     df = pd.DataFrame(result, columns=['score', 'send_1', 'send_2', 'response_1', 'response_2'])
     if not os.path.exists('result') :
