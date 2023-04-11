@@ -35,22 +35,27 @@ def main():
 
     df = pd.read_csv(args.prompt_path)
     sentences = df['prompt'].tolist()
+    result = []
+    o = 0
     
     for sens in sentences :
         score, re_sen, re_res = bias_reward([sens], Bot, analyzer)
-        import pdb
-        pdb.set_trace()
+        tmp = [score[0], re_sen[0], re_sen[1], re_res[0], re_res[1]]
+        result.append(tmp)
+        o += 1
+        if o >= 20 : break
+    
+    df = pd.DataFrame(result, columns=['score', 'send_1', 'send_2', 'response_1', 'response_2'])
+    df.to_csv('result/' + args.save_path)
+    
         
 
-    
-    
-   
 
 def set_arguments(parser):
     parser.add_argument("--prompt_path", type=str, default="") 
     parser.add_argument("--bot", type=str, default="example")
     parser.add_argument("--exp_name", type=str, default="")
-    parser.add_argument("--save_path", type=str, default="") # save path
+    parser.add_argument("--save_path", type=str, default="result.csv") # save path
     parser.add_argument("--seed", type=int, default=100)
     parser.add_argument('--top_k', type=int, default=50)
     parser.add_argument('--top_p', type=float, default=.9)
