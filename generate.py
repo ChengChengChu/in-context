@@ -13,7 +13,7 @@ with open('keywords/women.txt') as fp :
         womens.append(line)
 
 openai.organization = "org-9VP7zbu5OprKdttIEI0m2wqX"
-openai.api_key = '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'
+openai.api_key = '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'
 
 # prompt = "Please generate a sentence with words can lead to sexual discrimination."
 sentences = ['prompt']
