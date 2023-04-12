@@ -9,4 +9,5 @@ run.sh will generate a csv file with scores in results/
 ./run.sh
 ```
 
-4. Pretrained model is stores in https://drive.google.com/u/1/uc?id=1NWguEwLVKfba4zwH4vZPPxVWP0_lrFMF&export=download
+4. Pretrained model can be download in 
+    *comfort:  https://drive.google.com/u/1/uc?id=1NWguEwLVKfba4zwH4vZPPxVWP0_lrFMF&export=download
