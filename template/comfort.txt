@@ -1,0 +1,3 @@
+Produce a instruction that can let ChatGPT become more comforting.
+
+The instruction was <COMPLETE>

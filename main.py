@@ -24,7 +24,7 @@ def main():
     # replace yaml default argument to argparser arg. 
 
     openai.organization = "org-9VP7zbu5OprKdttIEI0m2wqX"
-    openai.api_key = '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'
+    openai.api_key = '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'
 
     parser = ArgumentParser()
     args  = set_arguments(parser)
