@@ -39,7 +39,7 @@ def main():
     result = []
     
     # sentences = generate_testcase(args.num_test_case)
-    for i in range(0) :
+    for i in range(1) :
         # result = []
         # if i != 0 : sentences = generate_testcase(args.num_test_case)
 
@@ -54,7 +54,7 @@ def main():
         df = pd.DataFrame(result, columns=['score', 'send_1', 'send_2', 'response_1', 'response_2'])
         if not os.path.exists('result') :
             os.mkdir('result')
-        df.to_csv(f"result/{args.exp_name}_{i}.csv")
+        df.to_csv(f"result/{args.save_path}.csv")
         
         
 
