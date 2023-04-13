@@ -15,7 +15,7 @@ import json
 from utils import *
 import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from generate import *
+# from generate import *
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -36,12 +36,12 @@ def main():
 
     df = pd.read_csv(args.prompt_path)
     sentences = df['prompt'].tolist()
-    # result = []
+    result = []
     
     # sentences = generate_testcase(args.num_test_case)
-    for i in range(args.itr_time) :
-        result = []
-        if i != 0 : sentences = generate_testcase(args.num_test_case)
+    for i in range(0) :
+        # result = []
+        # if i != 0 : sentences = generate_testcase(args.num_test_case)
 
         for sens in tqdm(sentences) :
             if args.bot == 'blenderbot' :
@@ -50,8 +50,7 @@ def main():
             tmp = [score[0], re_sen[0][0], re_sen[0][1], re_res[0][0], re_res[0][1]]
             result.append(tmp)
         
-        import pdb
-        pdb.set_trace()
+        
         df = pd.DataFrame(result, columns=['score', 'send_1', 'send_2', 'response_1', 'response_2'])
         if not os.path.exists('result') :
             os.mkdir('result')
@@ -85,3 +84,4 @@ def fix_seed(args):
 
 if __name__ == "__main__":
     main()    
+
