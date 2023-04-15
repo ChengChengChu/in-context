@@ -41,6 +41,7 @@ def generate_testcase(num_return_sentences) :
         sentences.append(output['choices'][0]['message']['content'])
         
     return sentences
-# df = pandas.DataFrame(sentences)
-# df.to_csv('prompts/bias_prompt.csv')
+sentences = generate_testcase(2)
+df = pandas.DataFrame(sentences, columns=['sentence'])
+df.to_csv('prompts/chat_1000.csv')
 
