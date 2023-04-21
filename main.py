@@ -27,9 +27,6 @@ def prompt_rewards_sort(e):
 def main():
     
     # replace yaml default argument to argparser arg. 
-
-    openai.organization = "org-9VP7zbu5OprKdttIEI0m2wqX"
-    openai.api_key = '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'
     # openai.api_key = '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'
     parser = ArgumentParser()
     args  = set_arguments(parser)

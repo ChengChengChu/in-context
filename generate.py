@@ -92,8 +92,6 @@ class foo():
   pass
 
 if __name__ == "__main__":
-    openai.organization = "org-9VP7zbu5OprKdttIEI0m2wqX"
-    openai.api_key = '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'
     args = foo()
     args.demo_data_path = "data/empathic.txt"
     args.demo_num = 5

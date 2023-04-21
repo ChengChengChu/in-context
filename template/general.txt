@@ -1,3 +1,1 @@
-Produce a instruction that can let ChatGPT become more comforting.
-
-The instruction was <COMPLETE>
+I gave my friend instructions about letting him acting like the SpeakerB in the following demostrations. Notice that the name "SpeakerA" and "SpeakerB" are just the convenience way to distiguish the two speakers. So the instruction I gave didn't contain any word about "SpeakerA" nor "SpaekerB".
