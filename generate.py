@@ -3,6 +3,7 @@ import openai
 import pandas
 from tqdm import tqdm
 import time
+from random import sample
 
 # mens = []
 # with open('keywords/men.txt') as fp :
@@ -39,34 +40,63 @@ import time
 # df = pandas.DataFrame(sentences)
 # df.to_csv('prompts/bias_prompt.csv')
 
-def generate_proposal(template_path, sample_num, temperture):
-    prompts = []
+def generate_proposal(template_path, sample_num, temperture, args):
+
+  if args.demo_data_path is not None:
+    demo = []
+    with open(args.demo_data_path, 'r') as f:
+      table = f.readlines()
+    s = ""
+    for t in table:
+      if t != "====================\n":
+        s += t
+      else:
+        demo.append(s)
+        s = ""
+      
+
+  prompts = []
+  with open(template_path, 'r') as f:
+    table = f.readlines()
+
+  
+  for i in tqdm(range(sample_num), desc="Proposal"):
     template = ""
-    with open(template_path, 'r') as f:
-        table = f.readlines()
-        for s in table:
-            template += s
-    
-    for i in tqdm(range(sample_num)):
-        while(True):
-            try:
-                response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                            {"role": "user", "content": template}
-                         ],
-                temperature=temperture
-                )
-                prompts.append(response['choices'][0]['message']['content'])
-                break
-            except:
-                time.sleep(1)
+    sub_demo = sample(demo, args.demo_num)
+  
+    template += table[0]
+    if args.demo_data_path is not None:
+      for i in range(args.demo_num):
+        template += f"\nDemo:{i+1}\n"
+        template += sub_demo[i]
+    template += "\n"
+    template += "The instruction was <COMPLETE>"
+  
+    while(True):
+      try:
+        response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+              {"role": "user", "content": template}
+        ],
+        temperature=temperture
+        )
+        prompts.append(response['choices'][0]['message']['content'])
+        break
+      except:
+        time.sleep(1)
 
-    return prompts
+  return prompts
 
-
+class foo():
+  pass
 
 if __name__ == "__main__":
     openai.organization = "org-9VP7zbu5OprKdttIEI0m2wqX"
-    openai.api_key = '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'
-    generate_proposal("template/comfort.txt", 1, 1.0)
+    openai.api_key = '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'
+    args = foo()
+    args.demo_data_path = "data/empathic.txt"
+    args.demo_num = 5
+    prompts = generate_proposal("template/comfort.txt", 10, 1.0, args)
+    for p in prompts:
+      print(p)

@@ -1,19 +1,19 @@
 mens, womens = [], []
 men_keys_to_idx, women_keys_to_idx = {}, {}
 
-with open('./keywords/men.txt') as fp :
-    idx = 0
-    for line in fp.read().splitlines() :
-        mens.append(line.lower())
-        men_keys_to_idx[line.lower()] = idx
-        idx += 1
+# with open('./keywords/men.txt') as fp :
+#     idx = 0
+#     for line in fp.read().splitlines() :
+#         mens.append(line.lower())
+#         men_keys_to_idx[line.lower()] = idx
+#         idx += 1
 
-with open('./keywords/women.txt') as fp : 
-    idx = 0
-    for line in fp.read().splitlines() :
-        womens.append(line.lower())
-        women_keys_to_idx[line.lower()] = idx
-        idx += 1
+# with open('./keywords/women.txt') as fp : 
+#     idx = 0
+#     for line in fp.read().splitlines() :
+#         womens.append(line.lower())
+#         women_keys_to_idx[line.lower()] = idx
+#         idx += 1
 
 def replace_sentence(sens):
     ''' This function returns two sentences correspond to the given sentence
@@ -87,5 +87,15 @@ def bias_reward(sentences, bot, analyzer):
         # print(score, '\n')
     return score, re_sen, re_res
 
+def comfort_reward():
+  pass
+
+def longer_inter_reward(prompt, dialogue):
+  length = 0
+  for i in range(len(dialogue)):
+    if i != 0 and i % 2 == 0:
+      length += len(dialogue[i].split())
+
+  return {"reward":length, "prompt":prompt, "dialogue":dialogue}
 
 
