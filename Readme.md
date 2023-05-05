@@ -25,3 +25,5 @@ python3 main.py \
 - top_k_prompts: Using top k prompts to resample
 - demo_num: Number of demos use to generate prompt
 - prefix_sample_num: Number of dialogue to calculate reward per prompt
+
+The results will be locate at results/
