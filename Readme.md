@@ -1,4 +1,4 @@
-# APE on chatbot
+# APE on Chatbot
 This repository aims to implement APE on chatbot. You can find the paper of APE [**here**](https://arxiv.org/abs/2211.01910).
 
 You can execute the code by running:
