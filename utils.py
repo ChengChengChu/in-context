@@ -1,3 +1,5 @@
+import importlib
+
 mens, womens = [], []
 men_keys_to_idx, women_keys_to_idx = {}, {}
 
@@ -87,8 +89,21 @@ def bias_reward(sentences, bot, analyzer):
         # print(score, '\n')
     return score, re_sen, re_res
 
-def comfort_reward():
-  pass
+def comfort_reward(dialogue):
+    Reward_func = importlib.import_module(".module", "bots").agent
+    reward_func = Reward_func()
+
+    s = ""
+
+    for i in range(len(dialogue)):
+        s += f"SpeakerA: {dialogue['A'][i]}\n"
+        s += f"SpeakerB: {dialogue['B'][i]}\n"
+    for i in range(3):
+        reward = reward_func.score(s)
+        if reward >= 0:
+            return reward
+    return 0
+    
 
 def longer_inter_reward(prompt, dialogue):
   length = 0

@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 import openai
+from openai_generate_response import openai_chat_response
 
 class bot(nn.Module):
     def __init__(self, config):
@@ -21,13 +22,14 @@ class bot(nn.Module):
         else:
           messages.append({"role": "assistant", "content": history[i]})
       
-      response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages = messages,
-        temperature = 0.0
-      )
+      # response = openai.ChatCompletion.create(
+      #   model="gpt-3.5-turbo",
+      #   messages = messages,
+      #   temperature = 0.0
+      # )
 
-      return response['choices'][0]['message']['content']
+      # return response['choices'][0]['message']['content']
+      return openai_chat_response(messages, 0.0)
     # def make_response(self, prefix_sentences):
         
     #     #openai.api_key = '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'

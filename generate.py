@@ -4,6 +4,7 @@ import pandas
 from tqdm import tqdm
 import time
 from random import sample
+from openai_generate_response import openai_chat_response
 
 # mens = []
 # with open('keywords/men.txt') as fp :
@@ -71,20 +72,23 @@ def generate_proposal(template_path, sample_num, temperture, args):
         template += sub_demo[i]
     template += "\n"
     template += "The instruction was <COMPLETE>"
+
+    messages=[{"role": "user", "content": template}]
+    prompts.append(openai_chat_response(messages, temperture))
   
-    while(True):
-      try:
-        response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-              {"role": "user", "content": template}
-        ],
-        temperature=temperture
-        )
-        prompts.append(response['choices'][0]['message']['content'])
-        break
-      except:
-        time.sleep(1)
+    # while(True):
+    #   try:
+    #     response = openai.ChatCompletion.create(
+    #     model="gpt-3.5-turbo",
+    #     messages=[
+    #           {"role": "user", "content": template}
+    #     ],
+    #     temperature=temperture
+    #     )
+    #     prompts.append(response['choices'][0]['message']['content'])
+    #     break
+    #   except:
+    #     time.sleep(1)
 
   return prompts
 
@@ -97,4 +101,4 @@ if __name__ == "__main__":
     args.demo_num = 5
     prompts = generate_proposal("template/comfort.txt", 10, 1.0, args)
     for p in prompts:
-      print(p)
+        print(p)

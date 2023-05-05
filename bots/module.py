@@ -2,9 +2,7 @@ import openai
 import re
 
 class agent() :
-    def __init__(self) :
-        key + organ
-        
+    def __init__(self) :        
         
         self.template = "Please read the following conversation about Speaker A and Speaker B. The goal of this task is to rate words Speaker B spoke.\nConversation :\n [CONV]\n(End of conversation fragment)\nHow comforting is Speaker B's words?(on a scale of 1-5, with 1 being the lowest). You cannot say nothing about this conversation."
 
