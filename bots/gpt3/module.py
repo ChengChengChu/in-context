@@ -16,11 +16,20 @@ class bot(nn.Module):
       messages = []
       if prompt != "":
         messages.append({"role": "system", "content": prompt})
-      for i in range(len(history)):
-        if i % 2 == 0:
-          messages.append({"role": "user", "content": history[i]})
-        else:
-          messages.append({"role": "assistant", "content": history[i]})
+
+      if len(history) % 2 == 1:
+        for i in range(len(history)):
+          if i % 2 == 0:
+            messages.append({"role": "user", "content": history[i]})
+          else:
+            messages.append({"role": "assistant", "content": history[i]})
+      else:
+         for i in range(len(history)):
+          if i % 2 == 1:
+            messages.append({"role": "user", "content": history[i]})
+          else:
+            messages.append({"role": "assistant", "content": history[i]})
+      
       
       # response = openai.ChatCompletion.create(
       #   model="gpt-3.5-turbo",
