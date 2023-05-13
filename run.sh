@@ -12,13 +12,13 @@
 
 python3 main.py \
 --proposal_template_path template/general.txt \
---sample_num 20 \
+--sample_num 100 \
 --reward comfort \
 --resample_turn_num 2 \
---resample_num 1 \
---top_k_prompts 10 \
+--resample_num 3 \
+--top_k_prompts 25 \
 --demo_data_path data/empathic_comma.txt \
---demo_num 10 \
+--demo_num 5 \
 --prefix_data_path data/delta_test.txt \
 --openai_api $openai_api \
 --openai_org $openai_org \

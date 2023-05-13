@@ -1,5 +1,6 @@
 import openai
 import re
+from openai_generate_response import openai_chat_response
 
 class agent() :
     def __init__(self) :        
@@ -34,12 +35,13 @@ class agent() :
         prompt = self.template.replace('[CONV]', conversation)
         # import pdb
         # pdb.set_trace()
-        response = openai.ChatCompletion.create(
-                   model = 'gpt-3.5-turbo', 
-                   messages=[
-                        {"role" : "system", 'content' : prompt}
-                       ]
-                )['choices'][0]['message']['content']
+        response = openai_chat_response(messages=[{"role" : "system", 'content' : prompt}])
+        # response = openai.ChatCompletion.create(
+        #            model = 'gpt-3.5-turbo', 
+        #            messages=[
+        #                 {"role" : "system", 'content' : prompt}
+        #                ]
+        #         )['choices'][0]['message']['content']
 
         return self.parse_score(response)
 
