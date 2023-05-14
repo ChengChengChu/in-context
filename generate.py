@@ -5,6 +5,7 @@ from tqdm import tqdm
 import time
 from random import sample
 from openai_generate_response import openai_chat_response
+from argparse import ArgumentParser
 
 # mens = []
 # with open('keywords/men.txt') as fp :
@@ -92,13 +93,18 @@ def generate_proposal(template_path, sample_num, temperture, args):
 
   return prompts
 
-class foo():
-  pass
-
 if __name__ == "__main__":
-    args = foo()
+    
+    parser = ArgumentParser()
+    parser.add_argument("--openai_api", type=str)
+    parser.add_argument("--openai_org", type=str, default=None)
+    parser.add_argument("--demo_data_path", type=str, default=None)
+    args = parser.parse_args()
     args.demo_data_path = "data/empathic.txt"
     args.demo_num = 5
-    prompts = generate_proposal("template/comfort.txt", 10, 1.0, args)
+    openai.api_key = args.openai_api
+    if args.openai_org is not None:
+        openai.organization = args.openai_org
+    prompts = generate_proposal("template/test.txt", 10, 1.0, args)
     for p in prompts:
         print(p)

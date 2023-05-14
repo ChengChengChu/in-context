@@ -1,5 +1,6 @@
 import openai
 import time
+import traceback
 
 def openai_chat_response(messages, temperature = 1.0):
     for i in range(10):
@@ -11,4 +12,5 @@ def openai_chat_response(messages, temperature = 1.0):
         )
         return response['choices'][0]['message']['content']
       except:
+        traceback.print_exc()
         time.sleep(i*100)

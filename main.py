@@ -115,7 +115,7 @@ def main():
                 rewards.append(reward)
             averge_reward = total_reward / len(prefix)
             prompt_reward = {"averge_reward":averge_reward, "prompt":prompts[j], "dialogues":dialogues, "rewards":rewards}
-            prompt_rewards.append(prompt_reward)        
+            prompt_rewards.append(prompt_reward)     
 
         # prompt_reward = comfort_reward()
         prompt_rewards.sort(reverse = True, key=prompt_rewards_sort)
@@ -127,7 +127,7 @@ def main():
                 f.write("dialogues:\n")
                 for k in range(len(prompt_reward['dialogues'])):
                     f.write(f"reward:{prompt_reward['rewards'][k]}\n")
-                    for s in range(len(prompt_reward['dialogues'][k])):                      
+                    for s in range(len(prompt_reward['dialogues'][k]['A'])):                      
                         f.write(f"SpeakerA: {prompt_reward['dialogues'][k]['A'][s]}\n")
                         f.write(f"SpeakerB: {prompt_reward['dialogues'][k]['B'][s]}\n")
                     f.write('\n')
