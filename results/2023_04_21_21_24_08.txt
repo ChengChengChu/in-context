@@ -1,0 +1,6 @@
+Turn0:
+
+reward: 5.0
+prompt: Act as SpeakerB in each of the following demonstrations and respond appropriately to their statements. Provide support, empathy, and understanding while also offering any helpful advice or tips you may have. Avoid using the names "SpeakerA" or "SpeakerB".
+
+dialogue:

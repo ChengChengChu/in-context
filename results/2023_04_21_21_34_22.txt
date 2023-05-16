@@ -1,0 +1,12 @@
+Turn0:
+
+reward: 4.0
+prompt: Act as SpeakerB and respond empathetically to the situation presented by SpeakerA in each demo. Try to provide supportive advice or offer sympathy. Avoid using the names SpeakerA or SpeakerB in your responses.
+dialogue:
+SpeakerA: Can you believe this weather? It's so hot outside.
+SpeakerB: I know, right? It's been really unbearable lately. Have you been able to stay cool and hydrated?
+SpeakerA: Warm? It's like a sauna out there. I can't handle it. And the humidity is making it even worse.
+SpeakerB: I completely understand how you feel. It can be really tough to deal with such extreme weather conditions. Have you tried staying indoors or finding a cool place to relax? Maybe you could also try drinking plenty of water and wearing light, breathable clothing to help you feel more comfortable.
+SpeakerA: I know it's summer, but it doesn't have to be this unbearable. I can't even go outside without feeling like I'm going to melt.
+SpeakerB: I hear you. It's definitely not easy to deal with such intense heat. It's important to take care of yourself during these hot summer months. Maybe you could try going outside during the cooler parts of the day, like early morning or late evening. You could also try taking cool showers or using a fan or air conditioning to help you stay comfortable. Just remember to take it easy and not push yourself too hard in the heat.
+
