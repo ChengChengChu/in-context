@@ -180,7 +180,7 @@ def main():
 
 
 def set_arguments(parser):
-    parser.add_argument("--prompt", type=str)
+    parser.add_argument("--prompt", type=str, nargs='+')
     # parser.add_argument("--proposal_template_path", type=str, default="template/general.txt", help="Path to the template proposal")
     # parser.add_argument("--reward", type=str, default="comfort")
     parser.add_argument("--prefix_data_path", type=str, default="data/delta_test.txt")

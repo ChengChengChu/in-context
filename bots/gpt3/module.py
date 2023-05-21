@@ -15,7 +15,8 @@ class bot(nn.Module):
     def make_response(self, history, prompt = ""):
       messages = []
       if prompt != "":
-        messages.append({"role": "system", "content": prompt})
+        for p in prompt:
+          messages.append({"role": "system", "content": p})
 
       if len(history) % 2 == 1:
         for i in range(len(history)):
