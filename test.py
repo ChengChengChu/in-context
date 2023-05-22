@@ -19,6 +19,7 @@ from generate import generate_proposal
 from dialogue import make_dialogue, make_dialogue_fix_A
 import time
 from openai_generate_response import openai_chat_response
+import pandas as pd
 # from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 warnings.simplefilter(action='ignore', category=FutureWarning)

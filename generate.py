@@ -68,16 +68,16 @@ def generate_proposal(template_path, sample_num, temperture, log_dict, args):
   
     template += table[0]
     if args.demo_data_path is not None:
-      for i in range(args.demo_num):
+      for j in range(args.demo_num):
         # template += f"\nDemo:{i+1}\n"
-        template += f"\nConversation:{i+1}\n"
-        template += sub_demo[i]
+        template += f"\nConversation:{j+1}\n"
+        template += sub_demo[j]
     template += "\n"
     template += "The instruction was <COMPLETE>"
 
     messages=[{"role": "user", "content": template}]
+    log_dict[i]["Turn"] = 0
     log_dict[i]["Prompt"] = openai_chat_response(messages, temperture)
-  
     # while(True):
     #   try:
     #     response = openai.ChatCompletion.create(

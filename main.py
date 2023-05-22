@@ -19,12 +19,21 @@ from generate import generate_proposal
 from dialogue import make_dialogue, make_dialogue_fix_A
 import time
 from openai_generate_response import openai_chat_response
+import pandas as pd
 # from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-def prompt_rewards_sort(e):
-  return e["averge_reward"]
+def log_dict_sort(e):
+    return e["Average_Reward"]
+
+def dialogue_to_readable(dialogue):
+    # dialogue = {'A':[], 'B':[]}
+    s = ""
+    for i in range(len(dialogue['A'])):
+        s += f"SpeakerA: {dialogue['A'][i]}\n"
+        s += f"SpeakerB: {dialogue['B'][i]}\n"
+    return s
 
 def main():
 
@@ -37,11 +46,7 @@ def main():
     t = time.time()
     t1 = time.localtime(t)
     t2 = time.strftime('%Y_%m_%d_%H_%M_%S',t1)
-    log_path = os.path.join(args.save_path, f"{t2}.txt")
-
-    Path(args.save_path).mkdir(exist_ok=True)
-    with open(log_path, "w+") as f:
-        f.write("")
+    log_path = os.path.join(args.save_path, f"{t2}.csv")
 
     openai.api_key = args.openai_api
     if args.openai_org is not None:
@@ -62,10 +67,6 @@ def main():
     else:
         Interlocutor = interlocutor(args.interlocutor_model_path, args)
 
-    if args.reward == 'comfort':
-        Reward = importlib.import_module(".module", "bots").agent
-        reward = Reward()
-        reward_function = reward.score
     # Interlocutor = interlocutor(args.interlocutor_model_path, args)
 
     if args.prefix_data_path is not None:
@@ -85,63 +86,63 @@ def main():
 
     prefix = random.sample(prefix, args.prefix_sample_num)
 
+    dict_format = {"Turn": None, "Prompt": None, "Demos": None, "Dialogue+Reward": [], "Average_Reward": None}
+    log_dict = [dict(dict_format) for _ in range(args.sample_num + 1)]
+
     # analyzer = SentimentIntensityAnalyzer()
 
-    prompts = [""]
+    log_dict[-1]["Prompt"] = ""
     
-    prompts.extend(generate_proposal(args.proposal_template_path, args.sample_num, args.proposal_temperature, args))
+    generate_proposal(args.proposal_template_path, args.sample_num, args.proposal_temperature, log_dict, args)
     # prompts = ["prompt" for _ in range(args.sample_num)]
-    prompt_rewards = []
-    
-    
     
     for i in tqdm(range(args.resample_turn_num + 1), desc="Running through turns"):
-        for j in tqdm(range(len(prompts)), desc="Running through all prompts"):
+        for j in tqdm(range(len(log_dict)), desc="Running through all prompts"):
             total_reward = 0
-            dialogues = []
-            rewards = []
             for k in tqdm(range(len(prefix)), desc="Running through all prefix"):
                 if args.fix_speakerA:
-                    dialogue = make_dialogue_fix_A(prompts[j], Bot, args, prefix[k])
+                    dialogue = make_dialogue_fix_A(log_dict[j]["Prompt"], Bot, args, prefix[k])
                 else:
-                    dialogue = make_dialogue(prompts[j], args.multi_turn_num, Bot, Interlocutor, args, prefix[k])
+                    dialogue = make_dialogue(log_dict[j]["Prompt"], args.multi_turn_num, Bot, Interlocutor, args, prefix[k])
 
-                if args.reward == "longer_inter":
-                    reward = longer_inter_reward(prompts[j], dialogue)
                 if args.reward == 'comfort':
                     reward = comfort_reward(dialogue)
                 total_reward += reward
-                dialogues.append(dialogue)
-                rewards.append(reward)
+                log_dict[j]["Dialogue+Reward"].append({"Reward": reward, "Dialogue": dialogue_to_readable(dialogue)})
             averge_reward = total_reward / len(prefix)
-            prompt_reward = {"averge_reward":averge_reward, "prompt":prompts[j], "dialogues":dialogues, "rewards":rewards}
-            prompt_rewards.append(prompt_reward)     
+            log_dict[j]["Average_Reward"] = averge_reward   
 
         # prompt_reward = comfort_reward()
-        prompt_rewards.sort(reverse = True, key=prompt_rewards_sort)
-        with open(log_path, 'a') as f:
-            f.write(f"Turn{i}:\n\n")
-            for prompt_reward in prompt_rewards:
-                f.write(f"averge_reward: {prompt_reward['averge_reward']}\n")
-                f.write(f"prompt: {prompt_reward['prompt']}\n")
-                f.write("dialogues:\n")
-                for k in range(len(prompt_reward['dialogues'])):
-                    f.write(f"reward:{prompt_reward['rewards'][k]}\n")
-                    for s in range(len(prompt_reward['dialogues'][k]['A'])):                      
-                        f.write(f"SpeakerA: {prompt_reward['dialogues'][k]['A'][s]}\n")
-                        f.write(f"SpeakerB: {prompt_reward['dialogues'][k]['B'][s]}\n")
-                    f.write('\n')
-        prompt_rewards = prompt_rewards[:args.top_k_prompts]
-        prompts = [prompt_reward["prompt"] for prompt_reward in prompt_rewards]
+        log_dict.sort(reverse = True, key=log_dict_sort)
+        pd.DataFrame(log_dict).to_csv(log_path, mode = "a", index=False, header=False)
+        # with open(log_path, 'a') as f:
+        #     f.write(f"Turn{i}:\n\n")
+        #     for prompt_reward in prompt_rewards:
+        #         f.write(f"averge_reward: {prompt_reward['averge_reward']}\n")
+        #         f.write(f"prompt: {prompt_reward['prompt']}\n")
+        #         f.write("dialogues:\n")
+        #         for k in range(len(prompt_reward['dialogues'])):
+        #             f.write(f"reward:{prompt_reward['rewards'][k]}\n")
+        #             for s in range(len(prompt_reward['dialogues'][k]['A'])):                      
+        #                 f.write(f"SpeakerA: {prompt_reward['dialogues'][k]['A'][s]}\n")
+        #                 f.write(f"SpeakerB: {prompt_reward['dialogues'][k]['B'][s]}\n")
+        #             f.write('\n')
+        log_dict = log_dict[:args.top_k_prompts]
+        # prompt_rewards = prompt_rewards[:args.top_k_prompts]
+        old_prompts = [l["Prompt"] for l in log_dict]
+        new_prompts = []
 
-        
-
-        if i != args.resample_turn_num - 1:
-            for j in tqdm(range(len(prompts)), desc="Resampling"):
+        if i != args.resample_turn_num:
+            for j in tqdm(range(len(old_prompts)), desc="Resampling"):
                 for _ in range(args.resample_num):
-                    messages=[{"role": "user", "content": f"Generate a variation of the following instruction while keeping the semantic meaning.\n\nInput: {prompts[j]}\nOutput:<COMPLETE>"}]
-                    prompts.append(openai_chat_response(messages, args.resample_temperature))
-    
+                    messages=[{"role": "user", "content": f"Generate a variation of the following instruction while keeping the semantic meaning.\n\nInput: {old_prompts[j]}\nOutput:<COMPLETE>"}]
+                    new_prompts.append(openai_chat_response(messages, args.resample_temperature))
+        log_dict = []
+        for p in new_prompts:
+            new_dict = dict(dict_format)
+            new_dict["Prompt"] = p
+            new_dict["Turn"] = i + 1
+            log_dict.append(new_dict)
     # for prompt_reward in prompt_rewards:
     #   print(f"reward:{prompt_reward[0]}")
     #   print(f"prompt:{prompt_reward[1]}")
