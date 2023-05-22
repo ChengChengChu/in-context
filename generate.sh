@@ -1,0 +1,1 @@
+python3 generate.py --openai_api $openai_api --openai_org $openai_org --demo_num 5 --sample_num 10 --proposal_template_path "template/test.txt"

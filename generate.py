@@ -42,7 +42,7 @@ from argparse import ArgumentParser
 # df = pandas.DataFrame(sentences)
 # df.to_csv('prompts/bias_prompt.csv')
 
-def generate_proposal(template_path, sample_num, temperture, args):
+def generate_proposal(template_path, sample_num, temperture, log_dict, args):
 
   if args.demo_data_path is not None:
     demo = []
@@ -56,8 +56,6 @@ def generate_proposal(template_path, sample_num, temperture, args):
         demo.append(s)
         s = ""
       
-
-  prompts = []
   with open(template_path, 'r') as f:
     table = f.readlines()
 
@@ -65,17 +63,20 @@ def generate_proposal(template_path, sample_num, temperture, args):
   for i in tqdm(range(sample_num), desc="Proposal"):
     template = ""
     sub_demo = sample(demo, args.demo_num)
+
+    log_dict[i]["Demos"] = sub_demo
   
     template += table[0]
     if args.demo_data_path is not None:
       for i in range(args.demo_num):
-        template += f"\nDemo:{i+1}\n"
+        # template += f"\nDemo:{i+1}\n"
+        template += f"\nConversation:{i+1}\n"
         template += sub_demo[i]
     template += "\n"
     template += "The instruction was <COMPLETE>"
 
     messages=[{"role": "user", "content": template}]
-    prompts.append(openai_chat_response(messages, temperture))
+    log_dict[i]["Prompt"] = openai_chat_response(messages, temperture)
   
     # while(True):
     #   try:
@@ -91,20 +92,21 @@ def generate_proposal(template_path, sample_num, temperture, args):
     #   except:
     #     time.sleep(1)
 
-  return prompts
-
 if __name__ == "__main__":
     
     parser = ArgumentParser()
     parser.add_argument("--openai_api", type=str)
     parser.add_argument("--openai_org", type=str, default=None)
-    parser.add_argument("--demo_data_path", type=str, default=None)
+    parser.add_argument("--demo_data_path", type=str, default="data/empathic.txt")
+    parser.add_argument("--demo_num", type=int, default=5)
+    parser.add_argument("--sample_num", type=int, default=10)
+    parser.add_argument("--proposal_template_path", type=str, default="template/test.txt", help="Path to the template proposal")
     args = parser.parse_args()
-    args.demo_data_path = "data/empathic.txt"
-    args.demo_num = 5
+    dict_format = {"Turn": None, "Prompt": None, "Demos": None, "Dialogue+Reward": [{"Reward": None, "Dialogue": None}], "Average_Reward": None}
+    log_dict = [dict_format for _ in range(args.sample_num)]
     openai.api_key = args.openai_api
     if args.openai_org is not None:
         openai.organization = args.openai_org
-    prompts = generate_proposal("template/test.txt", 10, 1.0, args)
-    for p in prompts:
-        print(p)
+    generate_proposal(args.proposal_template_path, args.sample_num, 1.0, log_dict, args)
+    for l in log_dict:
+        print(l["Prompt"])
