@@ -20,9 +20,19 @@ from dialogue import make_dialogue, make_dialogue_fix_A
 import time
 from openai_generate_response import openai_chat_response
 import pandas as pd
+import pickle
+import copy
 # from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
+
+def dialogue_to_readable(dialogue):
+    # dialogue = {'A':[], 'B':[]}
+    s = ""
+    for i in range(len(dialogue['A'])):
+        s += f"SpeakerA: {dialogue['A'][i]}\n"
+        s += f"SpeakerB: {dialogue['B'][i]}\n"
+    return s
 
 
 def main():
@@ -32,6 +42,23 @@ def main():
     args  = set_arguments(parser)
 
     fix_seed(args)
+
+    prompts = []
+    with open(args.prompt_file) as f:
+        table = f.readlines()
+    for t in table:
+        prompt = t.split('[SEP]')
+        for i in range(len(prompt)):
+            prompt[i] = prompt[i].strip()
+        prompts.append(prompt)
+
+    os.makedirs(f"{args.save_path}/test", exist_ok=True)
+
+    t = time.time()
+    t1 = time.localtime(t)
+    t2 = time.strftime('%Y_%m_%d_%H_%M_%S',t1)
+    log_path_csv = os.path.join(args.save_path, "test", f"test_{t2}.csv")
+    log_path_pkl = os.path.join(args.save_path, "test", f"test_{t2}.pkl")
 
     openai.api_key = args.openai_api
     if args.openai_org is not None:
@@ -71,117 +98,27 @@ def main():
 
     prefix = random.sample(prefix, args.prefix_sample_num)
 
-    # analyzer = SentimentIntensityAnalyzer()
-    bot_length_with_prompt = 0
-    bot_length_wo_prompt = 0
-    inter_length_with_prompt = 0
-    inter_length_wo_prompt = 0
-    with_wo_same_num = 0
-    for i in tqdm(range(args.prefix_sample_num)):
-        dialogue_with_prompt = make_dialogue(args.prompt, args.multi_turn_num, Bot, Interlocutor, args, prefix[i])
-        dialogue_wo_prompt = make_dialogue("", args.multi_turn_num, Bot, Interlocutor, args, prefix[i])
-        for j in range(len(dialogue_with_prompt['A'])):
-            inter_length_with_prompt += len(dialogue_with_prompt["A"][j].split())
-            inter_length_wo_prompt += len(dialogue_wo_prompt['A'][j].split())
-        for j in range(len(dialogue_with_prompt['B'])):
-            bot_length_with_prompt += len(dialogue_with_prompt["B"][j].split())
-            bot_length_wo_prompt += len(dialogue_wo_prompt["B"][j].split())
-            if dialogue_with_prompt["B"][j] == dialogue_wo_prompt['B'][j]:
-                with_wo_same_num += 1
+    dict_format = {"Prompt": None, "Dialogues": [], "Dialogues_split": []}
+    log_dict = [copy.deepcopy(dict_format) for _ in range(len(prompts))]
 
-    print(f"Bot length With / wo : {bot_length_with_prompt / bot_length_wo_prompt}")
-    print(f"Inter length With / wo : {inter_length_with_prompt / inter_length_wo_prompt}")
-    print(f"With and wo produce same: {with_wo_same_num}")
-        
-    # for i in tqdm(range(args.resample_turn_num + 1), desc="Running through turns"):
-    #     for j in tqdm(range(len(prompts)), desc="Running through all prompts"):
-    #         total_reward = 0
-    #         dialogues = []
-    #         rewards = []
-    #         for k in tqdm(range(len(prefix)), desc="Running through all prefix"):
-    #             if args.fix_speakerA:
-    #                 dialogue = make_dialogue_fix_A(prompts[j], Bot, args, prefix[k])
-    #             else:
-    #                 dialogue = make_dialogue(prompts[j], args.multi_turn_num, Bot, Interlocutor, args, prefix[k])
-
-    #             if args.reward == "longer_inter":
-    #                 reward = longer_inter_reward(prompts[j], dialogue)
-    #             if args.reward == 'comfort':
-    #                 reward = comfort_reward(dialogue)
-    #             total_reward += reward
-    #             dialogues.append(dialogue)
-    #             rewards.append(reward)
-    #         averge_reward = total_reward / len(prefix)
-    #         prompt_reward = {"averge_reward":averge_reward, "prompt":prompts[j], "dialogues":dialogues, "rewards":rewards}
-    #         prompt_rewards.append(prompt_reward)        
-
-    #     # prompt_reward = comfort_reward()
-    #     prompt_rewards.sort(reverse = True, key=prompt_rewards_sort)
-    #     with open(log_path, 'a') as f:
-    #         f.write(f"Turn{i}:\n\n")
-    #         for prompt_reward in prompt_rewards:
-    #             f.write(f"averge_reward: {prompt_reward['averge_reward']}\n")
-    #             f.write(f"prompt: {prompt_reward['prompt']}\n")
-    #             f.write("dialogues:\n")
-    #             for k in range(len(prompt_reward['dialogues'])):
-    #                 f.write(f"reward:{prompt_reward['rewards'][k]}\n")
-    #                 for s in range(len(prompt_reward['dialogues'][k])):                      
-    #                     f.write(f"SpeakerA: {prompt_reward['dialogues'][k]['A'][s]}\n")
-    #                     f.write(f"SpeakerB: {prompt_reward['dialogues'][k]['B'][s]}\n")
-    #                 f.write('\n')
-    #     prompt_rewards = prompt_rewards[:args.top_k_prompts]
-    #     prompts = [prompt_reward["prompt"] for prompt_reward in prompt_rewards]
-
-        
-
-    #     if i != args.resample_turn_num - 1:
-    #         for j in tqdm(range(len(prompts)), desc="Resampling"):
-    #             for _ in range(args.resample_num):
-    #                 messages=[{"role": "user", "content": f"Generate a variation of the following instruction while keeping the semantic meaning.\n\nInput: {prompts[j]}\nOutput:<COMPLETE>"}]
-    #                 prompts.append(openai_chat_response(messages, args.resample_temperature))
-    
-    # for prompt_reward in prompt_rewards:
-    #   print(f"reward:{prompt_reward[0]}")
-    #   print(f"prompt:{prompt_reward[1]}")
-
-    #   dialogue = prompt_reward[2]
-    #   print(f"prefix:{dialogue[0]}")
-    #   for i in range(1, len(dialogue)):
-    #     if i % 2 == 0:
-    #       print(f"interlocutor:{dialogue[i]}")
-    #     else:
-    #       print(f"bot:{dialogue[i]}")
-    #   print("")
-    #   #sort prompt_reward
-      #pick topK to resample
+    for i in tqdm(range(len(log_dict))):
+        log_dict[i]['Prompt'] = prompts[i]
+        for j in tqdm(range(args.prefix_sample_num)):
+            dialogue = dict()
+            dialogue = make_dialogue(prompts[i], args.multi_turn_num, Bot, Interlocutor, args, prefix[j])
+            log_dict[i]["Dialogues"].append(dialogue_to_readable(dialogue))
+            log_dict[i]["Dialogues_split"].append(dialogue)
+    pd.DataFrame(log_dict).to_csv(log_path_csv, index=False)
+    with open(log_path_pkl, 'wb') as f:
+        pickle.dump(log_dict, f)
     
     
-    
-
-    
-
-
-    # df = pd.read_csv(args.prompt_path)
-    # sentences = df['prompt'].tolist()
-    # result = []
-    
-    # for sens in tqdm(sentences) :
-    #     if args.bot == 'blenderbot' :
-    #         if len(sens) >= 128 : sens = sens[:128]
-    #     score, re_sen, re_res = bias_reward([sens], Bot, analyzer)
-    #     tmp = [score[0], re_sen[0][0], re_sen[0][1], re_res[0][0], re_res[0][1]]
-    #     result.append(tmp)
-    
-    # df = pd.DataFrame(result, columns=['score', 'send_1', 'send_2', 'response_1', 'response_2'])
-    # if not os.path.exists('result') :
-    #     os.mkdir('result')
-    # df.to_csv('result/' + args.save_path)
     
         
 
 
 def set_arguments(parser):
-    parser.add_argument("--prompt", type=str, nargs='+')
+    parser.add_argument("--prompt_file", type=str)
     # parser.add_argument("--proposal_template_path", type=str, default="template/general.txt", help="Path to the template proposal")
     # parser.add_argument("--reward", type=str, default="comfort")
     parser.add_argument("--prefix_data_path", type=str, default="data/delta_test.txt")

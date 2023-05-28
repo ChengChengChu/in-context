@@ -20,6 +20,7 @@ from dialogue import make_dialogue, make_dialogue_fix_A
 import time
 from openai_generate_response import openai_chat_response
 import pandas as pd
+import copy
 # from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -43,10 +44,12 @@ def main():
 
     fix_seed(args)
 
+    os.makedirs(f"{args.save_path}/main", exist_ok=True)
+
     t = time.time()
     t1 = time.localtime(t)
     t2 = time.strftime('%Y_%m_%d_%H_%M_%S',t1)
-    log_path = os.path.join(args.save_path, f"{t2}.csv")
+    log_path = os.path.join(args.save_path, "main", f"main_{t2}.csv")
 
     openai.api_key = args.openai_api
     if args.openai_org is not None:
@@ -87,11 +90,12 @@ def main():
     prefix = random.sample(prefix, args.prefix_sample_num)
 
     dict_format = {"Turn": None, "Prompt": None, "Demos": None, "Dialogue+Reward": [], "Average_Reward": None}
-    log_dict = [dict(dict_format) for _ in range(args.sample_num + 1)]
+    log_dict = [copy.deepcopy(dict_format) for _ in range(args.sample_num + 1)]
 
     # analyzer = SentimentIntensityAnalyzer()
 
     log_dict[-1]["Prompt"] = ""
+
     
     generate_proposal(args.proposal_template_path, args.sample_num, args.proposal_temperature, log_dict, args)
     # prompts = ["prompt" for _ in range(args.sample_num)]
@@ -114,7 +118,10 @@ def main():
 
         # prompt_reward = comfort_reward()
         log_dict.sort(reverse = True, key=log_dict_sort)
-        pd.DataFrame(log_dict).to_csv(log_path, mode = "a", index=False, header=False)
+        if i == 0:
+            pd.DataFrame(log_dict).to_csv(log_path, index=False)
+        else:
+            pd.DataFrame(log_dict).to_csv(log_path, mode = "a", index=False, header=False)
         # with open(log_path, 'a') as f:
         #     f.write(f"Turn{i}:\n\n")
         #     for prompt_reward in prompt_rewards:
@@ -156,7 +163,7 @@ def main():
     #       print(f"bot:{dialogue[i]}")
     #   print("")
     #   #sort prompt_reward
-      #pick topK to resample
+    #   pick topK to resample
     
     
     

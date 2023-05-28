@@ -3,10 +3,6 @@ import time, os
 from openai_generate_response import openai_chat_response
 
 
-openai.api_key = ""
-
-
-
 def ER_template(s: str) -> str:
     
     tmp = "Emotional reactions is  that expressing emotions such as warmth, compassion, and concern, experienced by peer supporter after reading seeker’s post.\n\n\

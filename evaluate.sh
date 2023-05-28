@@ -1,0 +1,1 @@
+python3 evaluate.py --dialogue_file results/test/test_2023_05_28_17_24_25.pkl --openai_api $openai_api --openai_org $openai_org

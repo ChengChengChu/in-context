@@ -1,6 +1,4 @@
 
-
-
 def make_dialogue(prompt, multi_turn_num, Bot, Interlocutor, args, prefix):
     messages = []
     dialogue = {'A':[], 'B':[]}
@@ -13,7 +11,6 @@ def make_dialogue(prompt, multi_turn_num, Bot, Interlocutor, args, prefix):
         if i != multi_turn_num - 1:
             inter_response = Interlocutor.make_response(messages)
             dialogue['A'].append(inter_response)
-        dialogue['B'].append(bot_response)
     return dialogue
 
 def make_dialogue_fix_A(prompt, Bot, args, prefix):
